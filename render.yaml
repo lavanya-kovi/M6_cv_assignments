@@ -1,7 +1,7 @@
-# Render Blueprint: one free web service that runs the Streamlit site.
+# Render Blueprint: one free web service that runs the Module 6 Streamlit app.
 services:
   - type: web
-    name: cv-assignments
+    name: cv-module6
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt

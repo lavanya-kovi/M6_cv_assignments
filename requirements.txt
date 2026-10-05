@@ -3,9 +3,6 @@ opencv-python-headless>=4.9
 numpy>=1.26
 pandas
 matplotlib
-pillow
 scipy
-scikit-image
-PyMuPDF
 imageio
 imageio-ffmpeg

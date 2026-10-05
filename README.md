@@ -1,9 +1,10 @@
-# CSc 8830 · Computer Vision — assignment portal
+# CSc 8830 · Computer Vision — Module 6
 
-One public web app for every assignment. Each module is a page in the sidebar.
+Optical flow, motion tracking and 4-view structure from motion.
 
-- **Live demo:** https://cv-assignments.onrender.com (replace with your Render URL)
-- **Source:** https://github.com/lavanya-kovi/CV-assignment-module-4
+- **Live demo:** https://cv-assignments-7a1l.onrender.com/Module_6_Motion_and_SfM
+- **Source:** https://github.com/lavanya-kovi/M6_cv_assignments
+- Earlier modules (2, 3, 4): https://github.com/lavanya-kovi/CV-assignment-module-4
 
 ## Run locally
 
@@ -12,60 +13,45 @@ pip install -r requirements.txt
 streamlit run Home.py
 ```
 
-## Modules on the site
-
-| Page | Assignment | Original repo |
-|---|---|---|
-| Module 2 | Camera calibration and real-world object measurement | [cv-module2-calibration](https://github.com/lavanya-kovi/cv-module2-calibration) |
-| Module 3 | Image blurring: spatial vs frequency-domain filtering | [cv-week-3-image-blur-fourier](https://github.com/lavanya-kovi/cv-week-3-image-blur-fourier) |
-| Module 4 | Human boundary segmentation (RGB + thermal) vs SAM2 | this repo |
-
-The Module 2 and 3 pages are those repos' Streamlit apps with their logic unchanged. The Module 2 page also offers bundled sample data:
-
-- the 14 checkerboard photos and 20 object photos, downscaled by 1/3 (`samples/m2/`);
-- the saved calibration, plus a copy scaled to the downscaled photos (`assets/m2/`);
-- the 20-object `results.csv`, for Step 3.
-
 ## Repository layout
 
 ```
 Home.py                               landing page
-pages/2_Module_2_Camera_Calibration.py Module 2 web demo
-pages/3_Module_3_Fourier_Blur.py      Module 3 web demo
-pages/4_Module_4_Human_Segmentation.py Module 4 web demo
-modules/m4_segmentation.py            Module 4 algorithms (also runnable from the command line)
-tools/sam2_generate_masks.py          offline SAM2 reference-mask generator (Colab)
-tools/sam2_boxes.json                 box prompts used for SAM2
-samples/rgb, samples/thermal          test images
-assets/sam2_masks/                    SAM2 masks, one PNG per sample (same file stem)
+pages/6_Module_6_Motion_and_SfM.py    Module 6 web demo
+modules/m6_optical_flow.py            Part A: dense flow, Lucas-Kanade tracking, bilinear interpolation
+modules/m6_sfm.py                     Part B: pose (E / H), DLT triangulation, PnP, bundle adjustment
+modules/m6_markers.py                 Part B: automatic dot + paper-corner detection and matching
+assets/m2/camera_params.json          camera matrix K from the Module 2 calibration
+assets/m6/video1, assets/m6/video2    stored optical-flow and tracking results for my two videos
+assets/m6/sfm/                        stored structure-from-motion results for my 4 photos
 ```
 
-## Module 4 — Human boundary segmentation
+## Method and results
 
-**Q1: RGB camera.** GrabCut graph-cut segmentation initialised from a box around the person, a second pass with a centre-axis foreground hint, then morphological opening/closing, small-region removal, hole filling, and pixel-exact contours (`CHAIN_APPROX_NONE`).
+**Part A: optical flow and tracking.** Dense Farneback optical flow on two videos (watering a plant, 26 s; a ceiling fan switching on, 30 s), shown as a side-by-side video (original | colour-coded flow | arrows). From the flow field the app computes speed, moving area, camera pan, divergence (approach) and curl (rotation). Lucas-Kanade tracking is implemented from the derivation (2x2 system `G d = b`, iterated, with our own bilinear interpolation). It is validated on two consecutive frames per video against the measured pixel locations (sub-pixel template matching): mean error 0.108 px (plant) and 0.089 px (fan).
 
-**Q2: Thermal camera.** Intensity channel (HSV value for pseudo-colour palettes), CLAHE, Gaussian blur, Otsu/Triangle/manual threshold, then morphology, area filter, and hole filling. An optional distance-transform watershed separates touching people.
+**Part B: structure from motion.** A US Letter sheet marked with 8 dark dots, photographed from 4 viewpoints with the Module 2 calibrated phone camera (K from Module 2). Plain paper has no texture, so the code detects the dots (solid, round, dark blobs) and the paper corners (GrabCut, then a line fit per edge). It matches them across views by a homography search, then runs:
 
-No machine-learning or deep-learning code is used in either pipeline.
+- two-view initialisation (homography decomposition for the planar scene, or E);
+- DLT triangulation;
+- PnP for the remaining views;
+- bundle adjustment;
+- plane fit.
 
-**Comparison with SAM2.** Reference masks are generated offline with SAM2 using the same box prompt. The app reports:
-
-- IoU, Dice, precision and recall;
-- boundary F-score within ±3 px;
-- a colour-coded disagreement map.
+The recovered boundary is 21.58 x 28.03 x 21.63 x 28.07 cm (real: 21.59 x 27.94 cm) with 0.54 px reprojection RMS.
 
 ### Command-line use
 
 ```bash
-python modules/m4_segmentation.py rgb samples/rgb/astronaut.png --rect 20 0 350 511 --sam2 assets/sam2_masks/astronaut.png
-python modules/m4_segmentation.py thermal samples/thermal/person.jpg --sam2 assets/sam2_masks/person.png
+python modules/m6_optical_flow.py flow  data/plant.mp4 --start 0 --duration 30 --out assets/m6/video1
+python modules/m6_optical_flow.py track data/plant.mp4 --start 8.3 --duration 1 --frame 0 --out assets/m6/video1
+python modules/m6_optical_flow.py flow  data/fan.mp4 --start 0 --duration 30 --out assets/m6/video2
+python modules/m6_optical_flow.py track data/fan.mp4 --start 4.5 --duration 1 --frame 0 --out assets/m6/video2
+python modules/m6_markers.py data/photo1.jpeg data/photo2.jpeg data/photo3.jpeg data/photo4.jpeg \
+    --camera assets/m2/camera_params.json --edge-cm 21.59 --out assets/m6/sfm
 ```
 
-### Adding SAM2 masks
-
-1. Put the images in `samples/rgb` and `samples/thermal`, and add one box per person to `tools/sam2_boxes.json`.
-2. Run `tools/sam2_generate_masks.py` in Colab. Instructions are at the top of that file.
-3. Commit the resulting `assets/sam2_masks/*.png`.
+The raw videos and photos live in `data/`, which is not committed because of its size. The results they produce are in `assets/m6/`.
 
 ## Deploying (Render)
 
@@ -82,7 +68,3 @@ To deploy:
 3. The first build takes a few minutes. After that, every push to `main` redeploys automatically.
 
 On the free plan the service sleeps after about 15 minutes without traffic. The next visit wakes it up, which takes roughly a minute.
-
-## Credits
-
-The sample RGB image `astronaut.png` is the NASA public-domain portrait of Eileen Collins, as distributed with scikit-image.
