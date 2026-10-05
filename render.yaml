@@ -1,10 +1,17 @@
-# Render Blueprint: one free web service that runs the Module 6 Streamlit app.
+# Render Blueprint: one site with all modules. Module 6 is pulled from its own repo at build time.
 services:
   - type: web
-    name: cv-module6
+    name: cv-assignments
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: >
+      rm -rf m6 &&
+      git clone --depth 1 https://github.com/lavanya-kovi/M6_cv_assignments.git m6 &&
+      cp m6/pages/6_Module_6_Motion_and_SfM.py pages/ &&
+      cp m6/modules/m6_*.py modules/ &&
+      mkdir -p assets/m2 && cp -r m6/assets/m6 assets/ &&
+      cp m6/assets/m2/camera_params.json assets/m2/ &&
+      pip install -r requirements.txt -r m6/requirements.txt
     startCommand: streamlit run Home.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
       - key: PYTHON_VERSION
