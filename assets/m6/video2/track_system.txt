@@ -1,0 +1,26 @@
+Point p = (165.00, 255.00), window 15x15
+
+G = sum over window [[Ix^2, IxIy], [IxIy, Iy^2]]
+  = [[11371.8, -4616.0], [-4616.0, 7439.8]]
+eigenvalues of G: 4388.6, 14423.0  (both large -> corner, solvable)
+
+b = -sum over window [Ix It, Iy It]   (It = I2(q) - I1(q), first iteration d = 0)
+  = [12522.3, -2620.7]
+
+first step d = G^-1 b = [1.2807, 0.4424] px
+
+iterations (d, rms residual It):
+   1: d = (  1.2807,   0.4424)   rms It =  10.986
+   2: d = (  1.5883,   0.7677)   rms It =   8.103
+   3: d = (  1.8263,   0.9795)   rms It =   7.323
+   4: d = (  1.9404,   1.1506)   rms It =   7.402
+   5: d = (  2.0106,   1.2246)   rms It =   7.343
+   6: d = (  2.0481,   1.2535)   rms It =   7.322
+   7: d = (  2.0705,   1.2605)   rms It =   7.215
+   8: d = (  2.0816,   1.2639)   rms It =   7.171
+   9: d = (  2.0871,   1.2656)   rms It =   7.150
+  10: d = (  2.0898,   1.2664)   rms It =   7.141
+  11: d = (  2.0911,   1.2669)   rms It =   7.136
+  12: d = (  2.0918,   1.2671)   rms It =   7.134
+
+final: p' = p + d = (167.09, 256.27)

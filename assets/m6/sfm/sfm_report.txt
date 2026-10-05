@@ -1,0 +1,83 @@
+=== Intrinsics K (from Module 2 calibration, rescaled) ===
+[[854.19   0.   452.82]
+ [  0.   851.33 605.52]
+ [  0.     0.     1.  ]]
+
+=== Two-view initialisation (view 1 -> view 4, the best-matched pair) ===
+E-inliers 12, H-inliers 12  -> model used: H
+E =
+[[-0.003  -0.0863 -0.6872]
+ [ 0.2014 -0.0975  0.1473]
+ [ 0.5795 -0.3358 -0.0074]]
+H =
+[[  0.7108  -0.3275 246.1002]
+ [  0.1708   0.6319  30.5497]
+ [ -0.0001  -0.0002   1.    ]]
+points in front of both cameras: 100.0%
+
+=== View 1 (photo1.jpeg) ===
+R =
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
+t = [0. 0. 0.]
+camera centre C = -R^T t = [0. 0. 0.]  = [0. 0. 0.] cm
+rotation from view 1: 0.00 deg
+
+=== View 2 (photo2.jpeg) ===
+R =
+[[ 0.0611 -0.9977 -0.0284]
+ [ 0.9515  0.0497  0.3036]
+ [-0.3015 -0.0456  0.9524]]
+t = [-0.0568 -1.3757  0.6247]
+camera centre C = -R^T t = [ 1.5008  0.0401 -0.1789]  = [12.4  0.3 -1.5] cm
+rotation from view 1: 88.19 deg;  PnP inliers 12
+
+=== View 3 (photo3.jpeg) ===
+R =
+[[ 0.9366  0.3497 -0.0227]
+ [-0.3376  0.9178  0.2092]
+ [ 0.094  -0.1883  0.9776]]
+t = [ 0.1618 -0.8241  0.1881]
+camera centre C = -R^T t = [-0.4474  0.7351 -0.0078]  = [-3.7  6.1 -0.1] cm
+rotation from view 1: 23.65 deg;  PnP inliers 12
+
+=== View 4 (photo4.jpeg) ===
+R =
+[[ 0.9511 -0.3063  0.0402]
+ [ 0.2914  0.9326  0.2129]
+ [-0.1027 -0.1908  0.9762]]
+t = [-0.2135 -0.8971  0.3019]
+camera centre C = -R^T t = [ 0.4954  0.8289 -0.0952]  = [ 4.1  6.9 -0.8] cm
+rotation from view 1: 21.57 deg
+
+=== Worked triangulation (DLT) for one point ===
+point #0 seen in views [1, 2, 3, 4]
+  x_1 = [180.98 183.88]
+  x_2 = [749.11 335.29]
+  x_3 = [100.22 326.17]
+  x_4 = [331.29 187.45]
+A (rows x*p3 - p1, y*p3 - p2 for each view) =
+[[-854.194    0.    -271.84     0.   ]
+ [   0.    -851.328 -421.641    0.   ]
+ [-141.544  838.744  306.442  233.63 ]
+ [-728.592  -29.967 -515.794 1002.383]
+ [-833.187 -232.309 -325.281 -204.53 ]
+ [ 261.111 -728.727 -451.193  649.024]
+ [-799.922  284.83  -153.014  145.65 ]
+ [-205.085 -714.214 -589.392  637.511]]
+X = last right-singular vector of A, dehomogenised = [-1.1867 -1.8427  3.7269]
+
+=== Reconstruction ===
+12 3-D points;  reprojection RMS before BA 0.687 px, after BA 0.544 px
+plane normal n = [-0.0024  0.009   1.    ];  RMS distance of points to plane = 0.02384 units (0.91% of object width)
+
+=== Boundary (plane coordinates) ===
+[[-1.2902  1.8367]
+ [ 1.3139  1.8367]
+ [ 1.3196 -1.545 ]
+ [-1.2905 -1.5503]]
+edge lengths (units): [2.6041 3.3817 2.61   3.387 ]
+scale: 8.289 cm per unit (from the known first edge)
+edge lengths (cm): [21.58 28.03 21.63 28.07]
+area: 606.2 cm^2

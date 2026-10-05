@@ -1,0 +1,11 @@
+# Render Blueprint: one free web service that runs the Streamlit site.
+services:
+  - type: web
+    name: cv-assignments
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run Home.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
